@@ -1,9 +1,6 @@
 package org.fomenko;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UserService {
     private final List<User> users = new ArrayList<>();
@@ -50,5 +47,25 @@ public class UserService {
     public User getUserById(int id) {
         return users.stream().filter(user -> user.getId() == id).findFirst().orElseThrow(() ->
                 new IllegalArgumentException("User with id " + id + " does not exist"));
+    }
+
+    // edit user name and email
+    public void editUser(int userId, String newName, String newEmail) {
+        User existingUser = findUserByID(userId);
+        if (existingUser == null) {
+            throw new IllegalArgumentException("User with id " + userId + " does not exist");
+        }
+
+        existingUser.setName(newName);
+        existingUser.setEmail(newEmail);
+        System.out.println("User is updated");
+    }
+
+    // delete user by ID. If ID does not exist throw exception
+    public void deleteUser(int userId) {
+        boolean removed = users.removeIf(u -> u.getId() == userId);
+        if (!removed) {
+            throw new IllegalArgumentException("User with ID " + userId + " does not exist.");
+        }
     }
 }

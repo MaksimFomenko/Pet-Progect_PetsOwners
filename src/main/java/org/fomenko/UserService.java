@@ -36,11 +36,19 @@ public class UserService {
         users.removeIf(user -> user.getEmail().equals(email));
     }
 
+    // get all Users from list
     public List<User> getAllUsers() {
         return new ArrayList<>(users);
     }
 
+    // get first User by name from list
     public User getUserByName(String name) {
         return users.stream().filter(user -> user.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    //get User by ID
+    public User getUserById(int id) {
+        return users.stream().filter(user -> user.getId() == id).findFirst().orElseThrow(() ->
+                new IllegalArgumentException("User with id " + id + " does not exist"));
     }
 }

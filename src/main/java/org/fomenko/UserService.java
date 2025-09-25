@@ -10,7 +10,7 @@ public class UserService {
     //add only new user to List. If User is existing throw Exception
     public void addUser(User user) {
         if (userIds.contains(user.getId())) {
-            throw new IllegalArgumentException("User with id " + user.getId() + " already exists");
+            throw new IllegalArgumentException("User with ID " + user.getId() + " already exists");
         } else if (userEmails.contains(user.getEmail())) {
             throw new IllegalArgumentException("User with email " + user.getEmail() + " already exists");
         }
@@ -46,14 +46,14 @@ public class UserService {
     //get User by ID
     public User getUserById(int id) {
         return users.stream().filter(user -> user.getId() == id).findFirst().orElseThrow(() ->
-                new IllegalArgumentException("User with id " + id + " does not exist"));
+                new IllegalArgumentException("User with ID " + id + " does not exist"));
     }
 
     // edit user name and email
     public void editUser(int userId, String newName, String newEmail) {
         User existingUser = findUserByID(userId);
         if (existingUser == null) {
-            throw new IllegalArgumentException("User with id " + userId + " does not exist");
+            throw new IllegalArgumentException("User with ID " + userId + " does not exist");
         }
 
         existingUser.setName(newName);
@@ -65,7 +65,7 @@ public class UserService {
     public void deleteUser(int userId) {
         boolean removed = users.removeIf(u -> u.getId() == userId);
         if (!removed) {
-            throw new IllegalArgumentException("User with ID " + userId + " does not exist.");
+            throw new IllegalArgumentException("User with ID " + userId + " does not exist");
         }
     }
 }

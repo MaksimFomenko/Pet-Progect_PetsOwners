@@ -1,73 +1,72 @@
 package org.fomenko.service;
 
 import org.fomenko.model.User;
+import org.fomenko.repository.UserRepository;
 
 import java.util.*;
 
 public class UserService {
-    private final List<User> users = new ArrayList<>();
-    private final Set<Integer> userIds = new HashSet<>();
-    private final Set<String> userEmails = new HashSet<>();
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     //add only new user to List. If User is existing throw Exception
     public void addUser(User user) {
-        if (userIds.contains(user.getId())) {
-            throw new IllegalArgumentException("User with ID " + user.getId() + " already exists");
-        } else if (userEmails.contains(user.getEmail())) {
-            throw new IllegalArgumentException("User with email " + user.getEmail() + " already exists");
+        if (userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalStateException("User with ID" + user.getId() + " already exists");
         }
 
-        users.add(user);
-        userIds.add(user.getId());
-        userEmails.add(user.getEmail());
-    }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalStateException("User with email: " + user.getEmail() + " already exists");
+        }
 
-    // find User by ID. Return User or null
-    public User findUserByID(int id) {
-        return users.stream()
-                .filter(user -> user.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    // delete User by email
-    public void deleteUserByEmail(String email) {
-        users.removeIf(user -> user.getEmail().equals(email));
-    }
-
-    // get all Users from list
-    public List<User> getAllUsers() {
-        return new ArrayList<>(users);
-    }
-
-    // get first User by name from list
-    public User getUserByName(String name) {
-        return users.stream().filter(user -> user.getName().equals(name)).findFirst().orElse(null);
+        userRepository.save(user);
     }
 
     //get User by ID
     public User getUserById(int id) {
-        return users.stream().filter(user -> user.getId() == id).findFirst().orElseThrow(() ->
-                new IllegalArgumentException("User with ID " + id + " does not exist"));
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User with ID: " + id + " does not exist"));
     }
 
-    // edit user name and email
-    public void editUser(int userId, String newName, String newEmail) {
-        User existingUser = findUserByID(userId);
-        if (existingUser == null) {
-            throw new IllegalArgumentException("User with ID " + userId + " does not exist");
-        }
+    // get first User by name from list
+    public User getUserByName(String name) {
+        return userRepository.findByUsername(name).orElseThrow(() -> new IllegalArgumentException("User with name: " + name + " does not exist"));
+    }
 
-        existingUser.setName(newName);
-        existingUser.setEmail(newEmail);
-        System.out.println("User is updated");
+    // get all Users from list
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     // delete user by ID. If ID does not exist throw exception
-    public void deleteUser(int userId) {
-        boolean removed = users.removeIf(u -> u.getId() == userId);
-        if (!removed) {
-            throw new IllegalArgumentException("User with ID " + userId + " does not exist");
+    public void deleteUserByID(int userId) {
+        if (userRepository.findById(userId).isPresent()) {
+            userRepository.deleteById(userId);
+        } else {
+            throw new IllegalArgumentException("User with ID: " + userId + " does not exist");
         }
     }
+
+    // delete User by email
+    public void deleteUserByEmail(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            userRepository.deleteByEmail(email);
+        } else {
+            throw new IllegalArgumentException("User with email: " + email + " does not exist");
+        }
+    }
+
+    // edit username and email
+    public void editUser(int userId, String newName, String newEmail) {
+        User existingUser = getUserById(userId);
+
+        existingUser.setName(newName);
+        existingUser.setEmail(newEmail);
+        userRepository.save(existingUser);
+        System.out.println("User is updated");
+    }
+
+
 }

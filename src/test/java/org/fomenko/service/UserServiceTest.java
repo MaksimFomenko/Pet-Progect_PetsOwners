@@ -99,18 +99,18 @@ public class UserServiceTest {
     }
 
     @Test
-    void testDeleteUserSuccessfully() {
+    void testDeleteUserByIDSuccessfully() {
         User testUser = userService.getUserById(1);
 
-        userService.deleteUser(1);
+        userService.deleteUserByID(1);
         assertFalse(userService.getAllUsers().contains(testUser));
     }
 
     @Test
-    void testDeleteUserThrowsExceptionIfNotFound() {
+    void testDeleteUserByIDThrowsExceptionIfNotFound() {
         Exception exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> userService.deleteUser(99));
+                () -> userService.deleteUserByID(99));
 
         assertEquals("User with ID 99 does not exist", exception.getMessage());
     }

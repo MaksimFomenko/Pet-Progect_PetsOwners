@@ -17,7 +17,7 @@ public class Main {
         }
         userService.addUser(new User(3, "Alina", "alina@gmail.com"));
 
-        System.out.println(userService.findUserByID(2));
+        System.out.println(userService.getUserById(2));
 
         userService.deleteUserByEmail("maksim1@gmail.com");
 
@@ -26,7 +26,7 @@ public class Main {
         System.out.println("Find! " + userService.getUserByName("Alina"));
 
         try {
-            userService.deleteUser(15);
+            userService.deleteUserByID(15);
             System.out.println("User deleted!");
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());

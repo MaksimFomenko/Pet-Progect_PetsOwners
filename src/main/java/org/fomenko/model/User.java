@@ -1,4 +1,4 @@
-package org.fomenko;
+package org.fomenko.model;
 
 import java.util.Objects;
 

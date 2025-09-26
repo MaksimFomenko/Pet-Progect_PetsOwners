@@ -1,5 +1,8 @@
 package org.fomenko;
 
+import org.fomenko.service.UserService;
+import org.fomenko.model.User;
+
 public class Main {
     public static void main(String[] args) {
         UserService userService = new UserService();

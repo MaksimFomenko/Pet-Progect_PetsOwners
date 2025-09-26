@@ -1,4 +1,6 @@
-package org.fomenko;
+package org.fomenko.service;
+
+import org.fomenko.model.User;
 
 import java.util.*;
 

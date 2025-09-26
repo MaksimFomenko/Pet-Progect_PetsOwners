@@ -1,5 +1,6 @@
-package org.fomenko;
+package org.fomenko.service;
 
+import org.fomenko.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

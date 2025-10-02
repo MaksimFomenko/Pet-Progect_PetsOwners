@@ -15,7 +15,7 @@ public class UserService {
     //add only new user to List. If User is existing throw Exception
     public void addUser(User user) {
         if (userRepository.findById(user.getId()).isPresent()) {
-            throw new IllegalStateException("User with ID" + user.getId() + " already exists");
+            throw new IllegalStateException("User with ID: " + user.getId() + " already exists");
         }
 
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -27,12 +27,14 @@ public class UserService {
 
     //get User by ID
     public User getUserById(int id) {
-        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User with ID: " + id + " does not exist"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with ID: " + id + " does not exist"));
     }
 
     // get first User by name from list
     public User getUserByName(String name) {
-        return userRepository.findByUsername(name).orElseThrow(() -> new IllegalArgumentException("User with name: " + name + " does not exist"));
+        return userRepository.findByUsername(name)
+                .orElseThrow(() -> new IllegalArgumentException("User with name: " + name + " does not exist"));
     }
 
     // get all Users from list

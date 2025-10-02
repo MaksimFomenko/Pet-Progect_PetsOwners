@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class InMemoryUserRepository implements  UserRepository {
-    private List<User> users;
+    private final List<User> users = new ArrayList<>();
 
     @Override
     public void save(User user) {

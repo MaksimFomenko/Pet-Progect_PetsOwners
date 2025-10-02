@@ -1,11 +1,14 @@
 package org.fomenko;
 
+import org.fomenko.repository.InMemoryUserRepository;
+import org.fomenko.repository.UserRepository;
 import org.fomenko.service.UserService;
 import org.fomenko.model.User;
 
 public class Main {
     public static void main(String[] args) {
-        UserService userService = new UserService();
+        UserRepository repository = new InMemoryUserRepository();
+        UserService userService = new UserService(repository);
 
         userService.addUser(new User(4, "Maksim", "maksim1@gmail.com"));
         userService.addUser(new User(2, "Miroslava", "miroslava@gmail.com"));

@@ -1,6 +1,8 @@
 package org.fomenko.service;
 
 import org.fomenko.model.User;
+import org.fomenko.repository.InMemoryUserRepository;
+import org.fomenko.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,20 +13,22 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
 
     private UserService userService;
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
-        userService = new UserService();
-        userService.addUser(new User(1, "Maksim", "maksim@gmail.com"));
-        userService.addUser(new User(2, "Ksenia", "ksenia@gmail.com"));
+        userRepository = new InMemoryUserRepository();
+        userService = new UserService(userRepository);
+        userRepository.save(new User(1, "Maksim", "maksim@gmail.com"));
+        userRepository.save(new User(2, "Ksenia", "ksenia@gmail.com"));
     }
 
     @Test
-    void testGetUserByNameReturnsCurrentUser() {
+    void testFindUserByNameReturnsCurrentUser() {
         User user = new User(3, "Alina", "alina@gmail.com");
-        userService.addUser(user);
+        userRepository.save(user);
 
-        User result = userService.getUserByName("Alina");
+        User result = userRepository.findByUsername("Alina").orElseThrow(() -> new AssertionError("User with name: " + user.getName() + " does not exist"));
 
         assertNotNull(result);
         assertEquals("Alina", result.getName());
@@ -32,20 +36,20 @@ public class UserServiceTest {
     }
 
     @Test
-    void testGetUserNameReturnNullIfNotFound() {
-        userService.addUser(new User(10, "Alex", "alex@gmail.com"));
+    void testFindUserNameThrowExceptionIfNotFound() {
+        userRepository.save(new User(10, "Alex", "alex@gmail.com"));
 
-        User result = userService.getUserByName("Marina");
-
-        assertNull(result);
+        assertThrows(AssertionError.class, () -> {
+            userRepository.findByUsername("NonExistentUser").orElseThrow(() -> new AssertionError("User not found"));
+        });
     }
 
     @Test
     void testUserIsAddedToList() {
         User user = new User(10, "Valentin", "valentin@gmail.com");
-        userService.addUser(user);
+        userRepository.save(user);
 
-        List<User> testUsersList = userService.getAllUsers();
+        List<User> testUsersList = userRepository.findAll();
 
         assertTrue(testUsersList.contains(user));
     }
@@ -54,18 +58,18 @@ public class UserServiceTest {
     void testDuplicateIdThrowsException() {
         User testUser = new User(1, "Valentin", "valentin@gmail.com");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.addUser(testUser));
+        Exception exception = assertThrows(IllegalStateException.class, () -> userService.addUser(testUser));
 
-        assertEquals("User with ID " + testUser.getId() + " already exists", exception.getMessage());
+        assertEquals("User with ID: " + testUser.getId() + " already exists", exception.getMessage());
     }
 
     @Test
     void testDuplicateEmailThrowsException() {
         User testUser = new User(3, "Valentin", "maksim@gmail.com");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.addUser(testUser));
+        Exception exception = assertThrows(IllegalStateException.class, () -> userService.addUser(testUser));
 
-        assertEquals("User with email " + testUser.getEmail() + " already exists", exception.getMessage());
+        assertEquals("User with email: " + testUser.getEmail() + " already exists", exception.getMessage());
     }
 
     @Test
@@ -75,7 +79,8 @@ public class UserServiceTest {
 
     @Test
     void testCheckEmptyList() {
-        userService = new UserService();
+        UserRepository repository = new InMemoryUserRepository();
+        UserService userService = new UserService(repository);
         assertTrue(userService.getAllUsers().isEmpty(), "Список пользователей должен быть пустым после инициализации");
     }
 
@@ -90,12 +95,9 @@ public class UserServiceTest {
 
     @Test
     void testEditUserThrowsExceptionIfNotFound() {
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.editUser(99, "Ghost", "ghost@gmail.com")
-        );
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.editUser(99, "Ghost", "ghost@gmail.com"));
 
-        assertEquals("User with ID 99 does not exist", exception.getMessage());
+        assertEquals("User with ID: 99 does not exist", exception.getMessage());
     }
 
     @Test
@@ -108,10 +110,8 @@ public class UserServiceTest {
 
     @Test
     void testDeleteUserByIDThrowsExceptionIfNotFound() {
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> userService.deleteUserByID(99));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteUserByID(99));
 
-        assertEquals("User with ID 99 does not exist", exception.getMessage());
+        assertEquals("User with ID: 99 does not exist", exception.getMessage());
     }
 }

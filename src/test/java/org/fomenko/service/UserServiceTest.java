@@ -39,9 +39,7 @@ public class UserServiceTest {
     void testFindUserNameThrowExceptionIfNotFound() {
         userRepository.save(new User(10, "Alex", "alex@gmail.com"));
 
-        assertThrows(AssertionError.class, () -> {
-            userRepository.findByUsername("NonExistentUser").orElseThrow(() -> new AssertionError("User not found"));
-        });
+        assertThrows(AssertionError.class, () -> userRepository.findByUsername("NonExistentUser").orElseThrow(() -> new AssertionError("User not found")));
     }
 
     @Test

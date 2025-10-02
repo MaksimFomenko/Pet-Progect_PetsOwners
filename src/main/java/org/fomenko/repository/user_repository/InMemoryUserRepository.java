@@ -1,10 +1,11 @@
-package org.fomenko.repository;
+package org.fomenko.repository.user_repository;
 
 import org.fomenko.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class InMemoryUserRepository implements UserRepository {
     private final List<User> users = new ArrayList<>();
@@ -20,8 +21,10 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return users.stream().filter(user -> user.getName().equals(username)).findFirst();
+    public List<User> findAllByUsername(String username) {
+        return users.stream()
+                .filter(user -> user.getName().equals(username))
+                .collect(Collectors.toList());
     }
 
     @Override

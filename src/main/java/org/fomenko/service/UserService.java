@@ -1,7 +1,7 @@
 package org.fomenko.service;
 
 import org.fomenko.model.User;
-import org.fomenko.repository.UserRepository;
+import org.fomenko.repository.user_repository.UserRepository;
 
 import java.util.*;
 
@@ -32,9 +32,14 @@ public class UserService {
     }
 
     // get first User by name from list
-    public User getUserByName(String name) {
-        return userRepository.findByUsername(name)
-                .orElseThrow(() -> new IllegalArgumentException("User with name: " + name + " does not exist"));
+    public List<User> getUsersByName(String name) {
+        List<User> users = userRepository.findAllByUsername(name);
+
+        if (users.isEmpty()) {
+            throw new IllegalArgumentException("User with name: " + name + " does not exist");
+        }
+
+        return users;
     }
 
     // get all Users from list

@@ -1,8 +1,8 @@
 package org.fomenko.service;
 
 import org.fomenko.model.User;
-import org.fomenko.repository.InMemoryUserRepository;
-import org.fomenko.repository.UserRepository;
+import org.fomenko.repository.user_repository.InMemoryUserRepository;
+import org.fomenko.repository.user_repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,18 +28,25 @@ public class UserServiceTest {
         User user = new User(3, "Alina", "alina@gmail.com");
         userRepository.save(user);
 
-        User result = userRepository.findByUsername("Alina").orElseThrow(() -> new AssertionError("User with name: " + user.getName() + " does not exist"));
+        List<User> result = userService.getUsersByName("Alina");
 
-        assertNotNull(result);
-        assertEquals("Alina", result.getName());
-        assertEquals("alina@gmail.com", result.getEmail());
+        assertFalse(result.isEmpty(), "Список не должен быть пустым");
+        assertEquals(1, result.size(), "Должен быть один пользователь с именем Alina");
+
+        User foundUser = result.get(0);
+        assertEquals("Alina", foundUser.getName());
+        assertEquals("alina@gmail.com", foundUser.getEmail());
     }
 
     @Test
     void testFindUserNameThrowExceptionIfNotFound() {
         userRepository.save(new User(10, "Alex", "alex@gmail.com"));
 
-        assertThrows(AssertionError.class, () -> userRepository.findByUsername("NonExistentUser").orElseThrow(() -> new AssertionError("User not found")));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            userService.getUsersByName("NonExistentUser");
+        });
+
+        assertEquals("User with name: NonExistentUser does not exist", exception.getMessage());
     }
 
     @Test

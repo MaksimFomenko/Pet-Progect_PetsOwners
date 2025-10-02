@@ -1,7 +1,7 @@
 package org.fomenko;
 
-import org.fomenko.repository.InMemoryUserRepository;
-import org.fomenko.repository.UserRepository;
+import org.fomenko.repository.user_repository.InMemoryUserRepository;
+import org.fomenko.repository.user_repository.UserRepository;
 import org.fomenko.service.UserService;
 import org.fomenko.model.User;
 
@@ -26,7 +26,7 @@ public class Main {
 
         userService.getAllUsers().forEach(System.out::println);
 
-        System.out.println("Find! " + userService.getUserByName("Alina"));
+        System.out.println("Find! " + userService.getUsersByName("Alina"));
 
         try {
             userService.deleteUserByID(15);

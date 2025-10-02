@@ -1,4 +1,4 @@
-package org.fomenko.repository;
+package org.fomenko.repository.user_repository;
 
 import org.fomenko.model.User;
 
@@ -9,7 +9,7 @@ public interface UserRepository {
     void save(User user);
 
     Optional<User> findById(int id);
-    Optional<User> findByUsername(String username);
+    List<User> findAllByUsername(String username);
     Optional<User> findByEmail(String email);
     List<User> findAll();
 

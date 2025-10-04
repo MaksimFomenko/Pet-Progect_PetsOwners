@@ -2,9 +2,12 @@ package org.fomenko.service;
 
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class UserService {
     private final UserRepository userRepository;
 
@@ -12,68 +15,54 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    //add only new user to List. If User is existing throw Exception
+
     public void addUser(User user) {
-        if (userRepository.findById(user.getId()).isPresent()) {
-            throw new IllegalStateException("User with ID: " + user.getId() + " already exists");
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() != null && e.getCause().getMessage().contains("unique")) {
+                throw new IllegalStateException("User with email: " + user.getEmail() + " already exists");
+            }
+            throw e;
         }
-
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalStateException("User with email: " + user.getEmail() + " already exists");
-        }
-
-        userRepository.save(user);
     }
 
-    //get User by ID
-    public User getUserById(int id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User with ID: " + id + " does not exist"));
+    public Optional<User> getUserById(int id) {
+        return userRepository.findById(id);
     }
 
-    // get first User by name from list
     public List<User> getUsersByName(String name) {
-        List<User> users = userRepository.findAllByUsername(name);
-
+        List<User> users = userRepository.findAllByName(name);
         if (users.isEmpty()) {
             throw new IllegalArgumentException("User with name: " + name + " does not exist");
         }
-
         return users;
     }
 
-    // get all Users from list
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // delete user by ID. If ID does not exist throw exception
     public void deleteUserByID(int userId) {
-        if (userRepository.findById(userId).isPresent()) {
-            userRepository.deleteById(userId);
-        } else {
-            throw new IllegalArgumentException("User with ID: " + userId + " does not exist");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " does not exist"));
+        userRepository.delete(user);
     }
 
-    // delete User by email
     public void deleteUserByEmail(String email) {
-        if (userRepository.findByEmail(email).isPresent()) {
-            userRepository.deleteByEmail(email);
-        } else {
-            throw new IllegalArgumentException("User with email: " + email + " does not exist");
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User with email: " + email + " does not exist"));
+        userRepository.delete(user);
     }
 
-    // edit username and email
     public void editUser(int userId, String newName, String newEmail) {
-        User existingUser = getUserById(userId);
+        User existingUser = getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " does not exist"));
 
         existingUser.setName(newName);
+
+        userRepository.findByEmail(newEmail).filter(user -> user.getId() != userId).ifPresent(user -> {
+            throw new IllegalStateException("Email " + newEmail + " is already used by another user");
+        });
         existingUser.setEmail(newEmail);
+
         userRepository.save(existingUser);
-        System.out.println("User is updated");
     }
-
-
 }

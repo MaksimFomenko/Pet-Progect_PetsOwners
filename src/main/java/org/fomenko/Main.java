@@ -1,44 +1,11 @@
 package org.fomenko;
 
-import org.fomenko.repository.user_repository.InMemoryUserRepository;
-import org.fomenko.repository.user_repository.UserRepository;
-import org.fomenko.service.UserService;
-import org.fomenko.model.User;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-        UserRepository repository = new InMemoryUserRepository();
-        UserService userService = new UserService(repository);
-
-        userService.addUser(new User(4, "Maksim", "maksim1@gmail.com"));
-        userService.addUser(new User(2, "Miroslava", "miroslava@gmail.com"));
-        try {
-            userService.addUser(new User(1, "maksim", "maksim@gmail.com"));
-            userService.addUser(new User(2, "Miroslava", "miroslava@gmail.com"));
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-        userService.addUser(new User(3, "Alina", "alina@gmail.com"));
-
-        System.out.println(userService.getUserById(2));
-
-        userService.deleteUserByEmail("maksim1@gmail.com");
-
-        userService.getAllUsers().forEach(System.out::println);
-
-        System.out.println("Find! " + userService.getUsersByName("Alina"));
-
-        try {
-            userService.deleteUserByID(15);
-            System.out.println("User deleted!");
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-
-        try {
-            userService.editUser(15, "Alinalina", "alinalina@gmail.com");
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        SpringApplication.run(Main.class, args);
     }
 }

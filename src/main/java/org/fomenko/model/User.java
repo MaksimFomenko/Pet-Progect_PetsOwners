@@ -1,23 +1,35 @@
 package org.fomenko.model;
 
+import jakarta.persistence.*;
+
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "users")
 public class User {
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
-    public User(int id, String name, String email) {
-        validateId(id);
+    public User() {
+    }
+
+    public User(String name, String email) {
         validateName(name);
         validateEmail(email);
 
-        this.id = id;
         this.name = name;
         this.email = email;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -46,21 +58,17 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
+        if (this == o)
+            return true;
+        if (!(o instanceof User))
             return false;
         User user = (User) o;
-        return id == user.id;
+        return id != null && id.equals(user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    private void validateId(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("ID must be greater than 0");
-        }
+        return Objects.hash(id);
     }
 
     private void validateName(String name) {

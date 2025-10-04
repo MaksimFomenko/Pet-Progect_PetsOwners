@@ -1,31 +1,37 @@
 package org.fomenko.service;
 
+import jakarta.transaction.Transactional;
 import org.fomenko.model.User;
-import org.fomenko.repository.user_repository.InMemoryUserRepository;
 import org.fomenko.repository.user_repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@Transactional
 public class UserServiceTest {
 
+    @Autowired
     private UserService userService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
-        userRepository = new InMemoryUserRepository();
-        userService = new UserService(userRepository);
-        userRepository.save(new User(1, "Maksim", "maksim@gmail.com"));
-        userRepository.save(new User(2, "Ksenia", "ksenia@gmail.com"));
+        //        userRepository.save(new User("Maksim", "maksim@gmail.com"));
+        //        userRepository.save(new User("Ksenia", "ksenia@gmail.com"));
     }
 
     @Test
+    @Transactional
     void testFindUserByNameReturnsCurrentUser() {
-        User user = new User(3, "Alina", "alina@gmail.com");
+        User user = new User("Alina", "alina@gmail.com");
         userRepository.save(user);
 
         List<User> result = userService.getUsersByName("Alina");
@@ -39,19 +45,19 @@ public class UserServiceTest {
     }
 
     @Test
+    @Transactional
     void testFindUserNameThrowExceptionIfNotFound() {
-        userRepository.save(new User(10, "Alex", "alex@gmail.com"));
+        userRepository.save(new User("Alex", "alex@gmail.com"));
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            userService.getUsersByName("NonExistentUser");
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.getUsersByName("NonExistentUser"));
 
         assertEquals("User with name: NonExistentUser does not exist", exception.getMessage());
     }
 
     @Test
+    @Transactional
     void testUserIsAddedToList() {
-        User user = new User(10, "Valentin", "valentin@gmail.com");
+        User user = new User("Valentin", "valentin@gmail.com");
         userRepository.save(user);
 
         List<User> testUsersList = userRepository.findAll();
@@ -60,45 +66,47 @@ public class UserServiceTest {
     }
 
     @Test
-    void testDuplicateIdThrowsException() {
-        User testUser = new User(1, "Valentin", "valentin@gmail.com");
+    @Transactional
+    void testAddUserDuplicateEmailThrowsException() {
+        userRepository.save(new User("Maksim", "maksim@gmail.com"));
 
-        Exception exception = assertThrows(IllegalStateException.class, () -> userService.addUser(testUser));
+        User duplicateUser = new User("Valentin", "maksim@gmail.com");
 
-        assertEquals("User with ID: " + testUser.getId() + " already exists", exception.getMessage());
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> userService.addUser(duplicateUser));
+
+        assertEquals("User with email: maksim@gmail.com already exists", exception.getMessage());
     }
 
     @Test
-    void testDuplicateEmailThrowsException() {
-        User testUser = new User(3, "Valentin", "maksim@gmail.com");
-
-        Exception exception = assertThrows(IllegalStateException.class, () -> userService.addUser(testUser));
-
-        assertEquals("User with email: " + testUser.getEmail() + " already exists", exception.getMessage());
-    }
-
-    @Test
+    @Transactional
     void successfullyAddingMultipleUsers() {
+        userRepository.save(new User("Maksim", "maksim@gmail.com"));
+        userRepository.save(new User("Ksenia", "ksenia@gmail.com"));
         assertEquals(2, userService.getAllUsers().size());
     }
 
     @Test
+    @Transactional
     void testCheckEmptyList() {
-        UserRepository repository = new InMemoryUserRepository();
-        UserService userService = new UserService(repository);
+        UserService userService = new UserService(userRepository);
         assertTrue(userService.getAllUsers().isEmpty(), "Список пользователей должен быть пустым после инициализации");
     }
 
     @Test
+    @Transactional
     void testEditUserSuccessfully() {
-        userService.editUser(1, "Max", "max@gmail.com");
+        User savedUser = userRepository.save(new User("Maksim", "maksim@gmail.com"));
 
-        User updatedUser = userService.getUserById(1);
+        userService.editUser(savedUser.getId(), "Max", "max@gmail.com");
+
+        User updatedUser = userService.getUserById(savedUser.getId()).orElseThrow(() -> new IllegalArgumentException("User with id: " + savedUser.getId() + " does not exist"));
+
         assertEquals("Max", updatedUser.getName());
         assertEquals("max@gmail.com", updatedUser.getEmail());
     }
 
     @Test
+    @Transactional
     void testEditUserThrowsExceptionIfNotFound() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.editUser(99, "Ghost", "ghost@gmail.com"));
 
@@ -106,14 +114,19 @@ public class UserServiceTest {
     }
 
     @Test
+    @Transactional
     void testDeleteUserByIDSuccessfully() {
-        User testUser = userService.getUserById(1);
+        User testUser = userRepository.save(new User("Maksim", "maksim@gmail.com"));
 
-        userService.deleteUserByID(1);
-        assertFalse(userService.getAllUsers().contains(testUser));
+        Integer userId = testUser.getId();
+
+        userService.deleteUserByID(userId);
+
+        assertFalse(userService.getAllUsers().stream().anyMatch(user -> user.getId().equals(userId)));
     }
 
     @Test
+    @Transactional
     void testDeleteUserByIDThrowsExceptionIfNotFound() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.deleteUserByID(99));
 

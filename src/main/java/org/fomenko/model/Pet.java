@@ -1,25 +1,39 @@
 package org.fomenko.model;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "\"pets\"")
 public class Pet {
-    private final int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private int age;
+
+    @Column(nullable = false)
     private String type;
+
+    @Column(name = "owner_id")
     private Integer ownerId;
 
-    public Pet(int id, String name, int age, String type, Integer ownerId) {
-        validateId(id);
+    public Pet(String name, int age, String type, Integer ownerId) {
         validateName(name);
         validateAge(age);
 
-        this.id = id;
         this.name = name;
         this.age = age;
         this.type = type;
         this.ownerId = ownerId;
     }
+
+    public Pet() {}
 
     public int getId() {
         return id;
@@ -48,6 +62,7 @@ public class Pet {
     }
 
     public void setType(String type) {
+        validateType(type);
         this.type = type;
     }
 
@@ -58,12 +73,6 @@ public class Pet {
     public void setOwnerId(Integer ownerId) {
         validateOwnerId(ownerId);
         this.ownerId = ownerId;
-    }
-
-    private void validateId(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("ID must be greater than 0");
-        }
     }
 
     private void validateName(String name) {
@@ -87,17 +96,23 @@ public class Pet {
         }
     }
 
+    private void validateType(String type) {
+        if (type == null || type.isEmpty()) {
+            throw new IllegalArgumentException("Type cannot be null or empty");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof Pet)) return false;
         Pet pet = (Pet) o;
-        return id == pet.id;
+        return id != null && id.equals(pet.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hash(id);
     }
 
     @Override

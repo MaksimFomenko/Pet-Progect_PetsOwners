@@ -3,6 +3,7 @@ package org.fomenko.service;
 import jakarta.transaction.Transactional;
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
+import org.fomenko.service.user_service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,6 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        //        userRepository.save(new User("Maksim", "maksim@gmail.com"));
-        //        userRepository.save(new User("Ksenia", "ksenia@gmail.com"));
     }
 
     @Test
@@ -94,10 +93,10 @@ public class UserServiceTest {
 
     @Test
     @Transactional
-    void testEditUserSuccessfully() {
+    void testUpdateUserSuccessfully() {
         User savedUser = userRepository.save(new User("Maksim", "maksim@gmail.com"));
 
-        userService.editUser(savedUser.getId(), "Max", "max@gmail.com");
+        userService.updateUser(savedUser.getId(), "Max", "max@gmail.com");
 
         User updatedUser = userService.getUserById(savedUser.getId()).orElseThrow(() -> new IllegalArgumentException("User with id: " + savedUser.getId() + " does not exist"));
 
@@ -107,8 +106,8 @@ public class UserServiceTest {
 
     @Test
     @Transactional
-    void testEditUserThrowsExceptionIfNotFound() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.editUser(99, "Ghost", "ghost@gmail.com"));
+    void testUpdateUserThrowsExceptionIfNotFound() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.updateUser(99, "Ghost", "ghost@gmail.com"));
 
         assertEquals("User with ID: 99 does not exist", exception.getMessage());
     }

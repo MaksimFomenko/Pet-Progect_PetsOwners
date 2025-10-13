@@ -1,4 +1,4 @@
-package org.fomenko.service;
+package org.fomenko.service.user_service;
 
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
@@ -53,7 +53,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public void editUser(int userId, String newName, String newEmail) {
+    public void updateUser(int userId, String newName, String newEmail) {
         User existingUser = getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " does not exist"));
 
         existingUser.setName(newName);

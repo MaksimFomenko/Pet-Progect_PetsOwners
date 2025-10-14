@@ -1,4 +1,4 @@
-package org.fomenko.service;
+package org.fomenko.service.user_service_tests;
 
 import jakarta.transaction.Transactional;
 import org.fomenko.model.User;

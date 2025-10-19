@@ -16,9 +16,9 @@ public class UserService {
     }
 
 
-    public void addUser(User user) {
+    public User addUser(User user) {
         try {
-            userRepository.save(user);
+            return userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             if (e.getCause() != null && e.getCause().getMessage().contains("unique")) {
                 throw new IllegalStateException("User with email: " + user.getEmail() + " already exists");
@@ -53,7 +53,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public void updateUser(int userId, String newName, String newEmail) {
+    public User updateUser(int userId, String newName, String newEmail) {
         User existingUser = getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " does not exist"));
 
         existingUser.setName(newName);
@@ -63,6 +63,6 @@ public class UserService {
         });
         existingUser.setEmail(newEmail);
 
-        userRepository.save(existingUser);
+        return userRepository.save(existingUser);
     }
 }

@@ -15,14 +15,14 @@ public class PetService {
         this.petRepository = petRepository;
     }
 
-    public void addPet(Pet pet) {
+    public Pet addPet(Pet pet) {
         if (pet == null) {
             throw new IllegalArgumentException("Pet cannot be null");
         }
-        petRepository.save(pet);
+        return petRepository.save(pet);
     }
 
-    private Pet getPetByIdOrThrow(int id) {
+    public Pet getPetById(int id) {
         return petRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Pet with ID " + id + " does not exist"));
     }
 
@@ -44,13 +44,13 @@ public class PetService {
     }
 
     public void deletePetById(int petId) {
-        Pet pet = getPetByIdOrThrow(petId);
+        Pet pet = getPetById(petId);
         petRepository.delete(pet);
     }
 
     @Transactional
     public Pet updatePet(int petId, String newName, int newAge, String newType) {
-        Pet existingPet = getPetByIdOrThrow(petId);
+        Pet existingPet = getPetById(petId);
 
         existingPet.setName(newName);
         existingPet.setAge(newAge);

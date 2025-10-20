@@ -1,4 +1,4 @@
-package org.fomenko.controller.UserController;
+package org.fomenko.controller.user_controller;
 
 import org.fomenko.model.User;
 import org.fomenko.service.user_service.UserService;
@@ -24,10 +24,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<User> getUserById(@PathVariable("id") Integer id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping

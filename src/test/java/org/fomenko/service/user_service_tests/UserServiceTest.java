@@ -1,6 +1,8 @@
 package org.fomenko.service.user_service_tests;
 
 import jakarta.transaction.Transactional;
+import org.fomenko.exception.UserNotFoundException;
+import org.fomenko.exception.UserUpdateException;
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
 import org.fomenko.service.user_service.UserService;
@@ -96,20 +98,28 @@ public class UserServiceTest {
     void testUpdateUserSuccessfully() {
         User savedUser = userRepository.save(new User("Maksim", "maksim@gmail.com"));
 
-        userService.updateUser(savedUser.getId(), "Max", "max@gmail.com");
-
-        User updatedUser = userService.getUserById(savedUser.getId()).orElseThrow(() -> new IllegalArgumentException("User with id: " + savedUser.getId() + " does not exist"));
+        User updatedUser = userService.updateUser(
+                savedUser.getId(),
+                "Max",
+                "max@gmail.com"
+        );
 
         assertEquals("Max", updatedUser.getName());
         assertEquals("max@gmail.com", updatedUser.getEmail());
+
+        User userFromDb = userRepository.findById(savedUser.getId())
+                .orElseThrow(() -> new UserNotFoundException(savedUser.getId()));
+
+        assertEquals("Max", userFromDb.getName());
+        assertEquals("max@gmail.com", userFromDb.getEmail());
     }
 
     @Test
     @Transactional
     void testUpdateUserThrowsExceptionIfNotFound() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.updateUser(99, "Ghost", "ghost@gmail.com"));
+        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.updateUser(99, "Ghost", "ghost@gmail.com"));
 
-        assertEquals("User with ID: 99 does not exist", exception.getMessage());
+        assertEquals("User with id 99 not found", exception.getMessage());
     }
 
     @Test

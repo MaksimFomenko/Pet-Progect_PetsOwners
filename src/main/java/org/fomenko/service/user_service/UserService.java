@@ -1,5 +1,7 @@
 package org.fomenko.service.user_service;
 
+import org.fomenko.exception.UserNotFoundException;
+import org.fomenko.exception.UserUpdateException;
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,8 +29,9 @@ public class UserService {
         }
     }
 
-    public Optional<User> getUserById(int id) {
-        return userRepository.findById(id);
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     public List<User> getUsersByName(String name) {
@@ -54,13 +57,16 @@ public class UserService {
     }
 
     public User updateUser(int userId, String newName, String newEmail) {
-        User existingUser = getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " does not exist"));
+        User existingUser = getUserById(userId);
 
         existingUser.setName(newName);
 
-        userRepository.findByEmail(newEmail).filter(user -> user.getId() != userId).ifPresent(user -> {
-            throw new IllegalStateException("Email " + newEmail + " is already used by another user");
-        });
+        userRepository.findByEmail(newEmail)
+                .filter(user -> !user.getId().equals(userId))
+                .ifPresent(user -> {
+                    throw new UserUpdateException("Email " + newEmail + " is already used by another user");
+                });
+
         existingUser.setEmail(newEmail);
 
         return userRepository.save(existingUser);

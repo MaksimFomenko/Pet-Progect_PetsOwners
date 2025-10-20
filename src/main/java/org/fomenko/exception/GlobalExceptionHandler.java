@@ -4,16 +4,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleNotFound(IllegalArgumentException e) {
-        return ResponseEntity.notFound().build();
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity.status(404).body(e.getMessage());
     }
 
-    // можно добавить другие обработчики
-    // например @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(UserUpdateException.class)
+    public ResponseEntity<String> handleUserUpdate(UserUpdateException e) {
+        return ResponseEntity.status(400).body(e.getMessage());
+    }
 }

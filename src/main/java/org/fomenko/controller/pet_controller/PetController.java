@@ -1,4 +1,4 @@
-package org.fomenko.controller.PetController;
+package org.fomenko.controller.pet_controller;
 
 import org.fomenko.model.Pet;
 import org.fomenko.service.pet_service.PetService;

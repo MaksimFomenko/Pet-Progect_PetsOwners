@@ -1,5 +1,7 @@
 package org.fomenko;
 
+import org.fomenko.model.User;
+import org.fomenko.service.user_service.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

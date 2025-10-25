@@ -7,8 +7,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFound(UserNotFoundException e) {
+    @ExceptionHandler(UserByIdNotFoundException.class)
+    public ResponseEntity<String> handleUserByIdNotFound(UserByIdNotFoundException e) {
+        return ResponseEntity.status(404).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserByNameNotFoundException.class)
+    public ResponseEntity<String> handleUserByNameNotFound(UserByNameNotFoundException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     }
 

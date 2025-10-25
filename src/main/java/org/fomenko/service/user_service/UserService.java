@@ -1,6 +1,7 @@
 package org.fomenko.service.user_service;
 
-import org.fomenko.exception.UserNotFoundException;
+import org.fomenko.exception.UserByIdNotFoundException;
+import org.fomenko.exception.UserByNameNotFoundException;
 import org.fomenko.exception.UserUpdateException;
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
@@ -31,13 +32,13 @@ public class UserService {
 
     public User getUserById(Integer id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new UserByIdNotFoundException(id));
     }
 
     public List<User> getUsersByName(String name) {
         List<User> users = userRepository.findAllByName(name);
         if (users.isEmpty()) {
-            throw new IllegalArgumentException("User with name: " + name + " does not exist");
+            throw new UserByNameNotFoundException(name);
         }
         return users;
     }

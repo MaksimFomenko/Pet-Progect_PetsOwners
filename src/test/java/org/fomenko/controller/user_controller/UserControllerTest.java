@@ -1,6 +1,6 @@
 package org.fomenko.controller.user_controller;
 
-import org.fomenko.exception.UserNotFoundException;
+import org.fomenko.exception.UserByIdNotFoundException;
 import org.fomenko.model.User;
 import org.fomenko.service.user_service.UserService;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class UserControllerTest {
     @Test
     void getUserById_NotFoundTest() throws Exception {
         int id = 999;
-        when(userService.getUserById(id)).thenThrow(new UserNotFoundException(id));
+        when(userService.getUserById(id)).thenThrow(new UserByIdNotFoundException(id));
 
         mockMvc.perform(get("/api/users/999")).andExpect(status().isNotFound());
     }

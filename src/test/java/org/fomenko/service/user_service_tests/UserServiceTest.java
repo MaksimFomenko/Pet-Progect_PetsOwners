@@ -1,8 +1,8 @@
 package org.fomenko.service.user_service_tests;
 
 import jakarta.transaction.Transactional;
-import org.fomenko.exception.UserNotFoundException;
-import org.fomenko.exception.UserUpdateException;
+import org.fomenko.exception.UserByIdNotFoundException;
+import org.fomenko.exception.UserByNameNotFoundException;
 import org.fomenko.model.User;
 import org.fomenko.repository.user_repository.UserRepository;
 import org.fomenko.service.user_service.UserService;
@@ -50,9 +50,9 @@ public class UserServiceTest {
     void testFindUserNameThrowExceptionIfNotFound() {
         userRepository.save(new User("Alex", "alex@gmail.com"));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.getUsersByName("NonExistentUser"));
+        UserByNameNotFoundException exception = assertThrows(UserByNameNotFoundException.class, () -> userService.getUsersByName("NonExistentUser"));
 
-        assertEquals("User with name: NonExistentUser does not exist", exception.getMessage());
+        assertEquals("User with name NonExistentUser not found", exception.getMessage());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class UserServiceTest {
         assertEquals("max@gmail.com", updatedUser.getEmail());
 
         User userFromDb = userRepository.findById(savedUser.getId())
-                .orElseThrow(() -> new UserNotFoundException(savedUser.getId()));
+                .orElseThrow(() -> new UserByIdNotFoundException(savedUser.getId()));
 
         assertEquals("Max", userFromDb.getName());
         assertEquals("max@gmail.com", userFromDb.getEmail());
@@ -117,7 +117,7 @@ public class UserServiceTest {
     @Test
     @Transactional
     void testUpdateUserThrowsExceptionIfNotFound() {
-        Exception exception = assertThrows(UserNotFoundException.class, () -> userService.updateUser(99, "Ghost", "ghost@gmail.com"));
+        Exception exception = assertThrows(UserByIdNotFoundException.class, () -> userService.updateUser(99, "Ghost", "ghost@gmail.com"));
 
         assertEquals("User with id 99 not found", exception.getMessage());
     }

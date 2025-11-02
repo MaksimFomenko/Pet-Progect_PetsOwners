@@ -1,11 +1,13 @@
 package org.fomenko.controller.user_controller;
 
+import org.fomenko.dto.UserDTO;
 import org.fomenko.model.User;
 import org.fomenko.service.user_service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/users")
@@ -30,8 +32,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.addUser(user);
+    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
+        User createdUser = userService.addUser(
+                User.builder()
+                    .name(userDTO.getName())
+                    .email(userDTO.getEmail())
+                    .build());
+
         return ResponseEntity.ok(createdUser);
     }
 

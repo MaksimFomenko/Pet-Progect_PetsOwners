@@ -1,11 +1,15 @@
 package org.fomenko.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "pets")
+@Builder
+@AllArgsConstructor
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

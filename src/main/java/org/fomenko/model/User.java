@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,9 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pet> pets = new ArrayList<>();
 
     public User() {
     }

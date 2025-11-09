@@ -1,4 +1,4 @@
-package org.fomenko.repository.pet_repository;
+package org.fomenko.repository;
 
 import org.fomenko.model.Pet;
 import org.fomenko.model.User;

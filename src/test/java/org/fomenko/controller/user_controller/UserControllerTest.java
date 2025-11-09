@@ -1,8 +1,9 @@
 package org.fomenko.controller.user_controller;
 
+import org.fomenko.controller.UserController;
 import org.fomenko.exception.UserByIdNotFoundException;
 import org.fomenko.model.User;
-import org.fomenko.service.user_service.UserService;
+import org.fomenko.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

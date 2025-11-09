@@ -1,4 +1,4 @@
-package org.fomenko.repository.user_repository;
+package org.fomenko.repository;
 
 import org.fomenko.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

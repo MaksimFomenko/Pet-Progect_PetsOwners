@@ -1,10 +1,10 @@
-package org.fomenko.service.user_service;
+package org.fomenko.service;
 
 import org.fomenko.exception.UserByIdNotFoundException;
 import org.fomenko.exception.UserByNameNotFoundException;
 import org.fomenko.exception.UserUpdateException;
 import org.fomenko.model.User;
-import org.fomenko.repository.user_repository.UserRepository;
+import org.fomenko.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 

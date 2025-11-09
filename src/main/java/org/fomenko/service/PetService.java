@@ -1,8 +1,8 @@
-package org.fomenko.service.pet_service;
+package org.fomenko.service;
 
 import jakarta.transaction.Transactional;
 import org.fomenko.model.Pet;
-import org.fomenko.repository.pet_repository.PetRepository;
+import org.fomenko.repository.PetRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
